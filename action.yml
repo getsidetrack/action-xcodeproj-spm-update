@@ -1,0 +1,28 @@
+name: 'action-xcodeproj-spm-update'
+description: 'Update your Xcode project with the latest Swift Package dependencies'
+branding:
+  icon: "package"
+  color: "purple"
+inputs:
+  directory:
+    description: 'The path in which the Xcodeproj can be found.'
+    required: false
+    default: '.'
+  forceResolution:
+    description: 'Always regenerate the Package.resolved, irrespective of conflicts.'
+    required: false
+    default: false
+  failWhenOutdated:
+    description: 'Action will fail if changes to dependencies are made.'
+    required: false
+    default: true
+outputs:
+  dependenciesChanged:
+    description: 'A bool (true or false) indicating whether changes were made to the dependencies.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - '-a ${{ inputs.directory }}'
+    - '-b ${{ inputs.forceResolution }}'
+    - '-c ${{ inputs.failWhenOutdated }}'
