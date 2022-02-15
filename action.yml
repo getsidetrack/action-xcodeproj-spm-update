@@ -19,10 +19,13 @@ inputs:
 outputs:
   dependenciesChanged:
     description: 'A bool (true or false) indicating whether changes were made to the dependencies.'
+    value: ${{ steps.script.outputs.dependenciesChanged }}
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - '-a ${{ inputs.directory }}'
-    - '-b ${{ inputs.forceResolution }}'
-    - '-c ${{ inputs.failWhenOutdated }}'
+  using: 'composite'
+  steps:
+    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
+      shell: bash
+
+    - id: script
+      run: entrypoint.sh
+      shell: bash
