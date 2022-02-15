@@ -23,9 +23,10 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - run: brew install md5sha1sum
+      shell: bash
     - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
       shell: bash
-
     - id: script
-      run: entrypoint.sh
+      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}"
       shell: bash

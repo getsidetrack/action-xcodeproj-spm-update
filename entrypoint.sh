@@ -24,7 +24,7 @@ fi
 
 # Identify `Package.resolved` location
 RESOLVED_PATH=$(find . -type f -name "Package.resolved" | grep -v "*/*.xcodeproj/*")
-CHECKSUM=$(md5sum "$RESOLVED_PATH")
+CHECKSUM=$(shasum "$RESOLVED_PATH")
 
 echo "Identified Package.resolved at '$RESOLVED_PATH'."
 
@@ -47,7 +47,7 @@ xcodebuild -resolvePackageDependencies
 echo "::endgroup"
 
 # Determine Changes
-NEWCHECKSUM=$(md5sum "$RESOLVED_PATH")
+NEWCHECKSUM=$(shasum "$RESOLVED_PATH")
 
 if [ "$CHECKSUM" != "$NEWCHECKSUM" ]; then
 	echo "::set-output name=dependenciesChanged::true"
