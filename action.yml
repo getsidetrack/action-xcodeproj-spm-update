@@ -16,6 +16,9 @@ inputs:
     description: 'Action will fail if changes to dependencies are made.'
     required: false
     default: true
+  xcodePath:
+    description: 'The path to Xcode which should be used to run xcodebuild commands - allows you to speicfy the Xcode version.'
+    required: false
 outputs:
   dependenciesChanged:
     description: 'A bool (true or false) indicating whether changes were made to the dependencies.'
@@ -28,5 +31,5 @@ runs:
     - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
       shell: bash
     - id: script
-      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}"
+      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}" -d "${{ inputs.xcodePath }}"
       shell: bash
