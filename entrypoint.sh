@@ -33,15 +33,15 @@ CHECKSUM=$(shasum "$RESOLVED_PATH")
 
 echo "Identified Package.resolved at '$RESOLVED_PATH'."
 
+# Cleanup Caches
+DERIVED_DATA=$(xcodebuild -showBuildSettings -disableAutomaticPackageResolution -disablePackageRepositoryCache | grep -m 1 BUILD_DIR | grep -oE "\/.*" | sed 's|/Build/Products||')
+rm -rf "$DERIVED_DATA"
+
 # If `forceResolution`, then delete the `Package.resolved`
 if [ "$forceResolution" = true ] || [ "$forceResolution" = 'true' ]; then
   echo "Deleting Package.resolved to force it to be regenerated under new format."
   rm -rf "$RESOLVED_PATH" 2>/dev/null
 fi
-
-# Cleanup Caches
-DERIVED_DATA=$(xcodebuild -showBuildSettings -disableAutomaticPackageResolution -disablePackageRepositoryCache | grep -m 1 BUILD_DIR | grep -oE "\/.*" | sed 's|/Build/Products||')
-rm -rf "$DERIVED_DATA"
 
 # Should be mostly redundant as we use the disable cache flag.
 SPM_CACHE="~/Library/Caches/org.swift.swiftpm/"
