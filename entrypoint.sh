@@ -2,7 +2,7 @@
 set -e
 
 # Load Options
-while getopts "a:b:c:" o; do
+while getopts "a:b:c:d:" o; do
    case "${o}" in
        a)
          export directory=${OPTARG}
@@ -10,8 +10,13 @@ while getopts "a:b:c:" o; do
        b)
          export forceResolution=${OPTARG}
        ;;
-	   c)
+       c)
          export failWhenOutdated=${OPTARG}
+       ;;
+       d)
+        if [ ! -z "${OPTARG}" ]; then
+          export DEVELOPER_DIR="${OPTARG}"
+        fi
        ;;
   esac
 done
