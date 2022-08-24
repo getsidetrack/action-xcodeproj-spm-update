@@ -30,7 +30,7 @@ jobs:
 
 Note that this action will change the `Package.resolved` file which should be checked in to your repository. However, this action will not itself commit or push changes to your repository. We recommend using a package such as [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request) to achieve this automation.
 
-This action is looking for an `.xcodeproj` file within the current directory (`.`). For projects where this is not true, you may provide a `directory` input parameter. This is helpful for monorepo projects which may contain multiple projects.
+By default this action is looking for an `.xcodeproj` file within the current directory (`.`). For projects where this is not true, you may provide a `directory` input parameter. This is helpful for monorepo projects which may contain multiple projects.
 
 ```yaml
 jobs:
@@ -43,7 +43,23 @@ jobs:
           directory: 'iOS'
 ```
 
-If the Package.resolved file has been built with an incompatible version of Xcode, or is in any way corrupted then `xcodebuild` is likely to fail. By setting `forceResolution` to true, it will force Xcode to resolve from nothing and avoid this problem.
+Also, if your repository is using an `.xcworkspace` file then you can provide this through the `workspace` input. Note that you **must** also then specify the `scheme` input to be that of a shared scheme within your workspace.
+
+```yaml
+jobs:
+  dependencies:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: GetSidetrack/action-xcodeproj-spm-update@main
+        with:
+          workspace: 'Sidetrack.xcworkspace'
+          scheme: 'App-iOS'
+```
+
+If the Package.resolved file has been built with an incompatible version of Xcode, or is in any way corrupted then `xcodebuild` is likely to fail. By setting `forceResolution` to true, it will force Xcode to resolve from nothing and can potentially avoid this problem.
+
+You may specify the `xcodePath` input to a string specifying the path to the Xcode installation on your GitHub runner. This will most likely be one of the paths GitHub provides on their documentation [here](https://github.com/actions/runner-images/blob/main/images/macos/macos-12-Readme.md#xcode) but may also be your own path if using a self-hosted runner.
 
 ## Full Workflow
 
