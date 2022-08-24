@@ -3,28 +3,28 @@ set -e
 
 # Load Options
 while getopts "a:b:c:d:" o; do
-   case "${o}" in
-       a)
-         export directory=${OPTARG}
-       ;;
-       b)
-         export forceResolution=${OPTARG}
-       ;;
-       c)
-         export failWhenOutdated=${OPTARG}
-       ;;
-       d)
-        if [ ! -z "${OPTARG}" ]; then
-          export DEVELOPER_DIR="${OPTARG}"
-        fi
-       ;;
+  case "${o}" in
+  a)
+    export directory=${OPTARG}
+    ;;
+  b)
+    export forceResolution=${OPTARG}
+    ;;
+  c)
+    export failWhenOutdated=${OPTARG}
+    ;;
+  d)
+    if [ ! -z "${OPTARG}" ]; then
+      export DEVELOPER_DIR="${OPTARG}"
+    fi
+    ;;
   esac
 done
 
 # Change Directory
 if [ "$directory" != "." ]; then
-	echo "Changing directory to '$directory'."
-	cd $directory
+  echo "Changing directory to '$directory'."
+  cd $directory
 fi
 
 # Identify `Package.resolved` location
@@ -35,8 +35,8 @@ echo "Identified Package.resolved at '$RESOLVED_PATH'."
 
 # If `forceResolution`, then delete the `Package.resolved`
 if [ "$forceResolution" = true ] || [ "$forceResolution" = 'true' ]; then
-	echo "Deleting Package.resolved to force it to be regenerated under new format."
-	rm -rf "$RESOLVED_PATH" 2> /dev/null
+  echo "Deleting Package.resolved to force it to be regenerated under new format."
+  rm -rf "$RESOLVED_PATH" 2>/dev/null
 fi
 
 # Cleanup Caches
@@ -56,11 +56,11 @@ echo "::endgroup"
 NEWCHECKSUM=$(shasum "$RESOLVED_PATH")
 
 if [ "$CHECKSUM" != "$NEWCHECKSUM" ]; then
-	echo "::set-output name=dependenciesChanged::true"
+  echo "::set-output name=dependenciesChanged::true"
 
-	if [ "$failWhenOutdated" = true ] || [ "$failWhenOutdated" = 'true' ]; then
-		exit 1
-	fi
+  if [ "$failWhenOutdated" = true ] || [ "$failWhenOutdated" = 'true' ]; then
+    exit 1
+  fi
 else
-	echo "::set-output name=dependenciesChanged::false"
+  echo "::set-output name=dependenciesChanged::false"
 fi
