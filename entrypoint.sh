@@ -35,15 +35,16 @@ if [ "$forceResolution" = true ] || [ "$forceResolution" = 'true' ]; then
 fi
 
 # Cleanup Caches
-DERIVED_DATA=$(xcodebuild -showBuildSettings -disableAutomaticPackageResolution | grep -m 1 BUILD_DIR | grep -oE "\/.*" | sed 's|/Build/Products||')
-SPM_CACHE="~/Library/Caches/org.swift.swiftpm/"
-
+DERIVED_DATA=$(xcodebuild -showBuildSettings -disableAutomaticPackageResolution -disablePackageRepositoryCache | grep -m 1 BUILD_DIR | grep -oE "\/.*" | sed 's|/Build/Products||')
 rm -rf "$DERIVED_DATA"
+
+# Should be mostly redundant as we use the disable cache flag.
+SPM_CACHE="~/Library/Caches/org.swift.swiftpm/"
 rm -rf "$CACHE_PATH"
 
 # Resolve Dependencies
 echo "::group::xcodebuild resolve dependencies"
-xcodebuild -resolvePackageDependencies
+xcodebuild -resolvePackageDependencies -disablePackageRepositoryCache
 echo "::endgroup"
 
 # Determine Changes
