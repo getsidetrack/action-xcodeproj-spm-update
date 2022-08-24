@@ -2,7 +2,7 @@
 set -e
 
 # Load Options
-while getopts "a:b:c:d:" o; do
+while getopts "a:b:c:d:e:f:" o; do
   case "${o}" in
   a)
     export directory=${OPTARG}
@@ -18,8 +18,20 @@ while getopts "a:b:c:d:" o; do
       export DEVELOPER_DIR="${OPTARG}"
     fi
     ;;
+  e)
+    export workspaceName=${OPTARG}
+    ;;
+  f)
+    export scheme=${OPTARG}
+    ;;
   esac
 done
+
+# Input Validation
+if [ ! -z "$workspaceName" ] && [ -z "$scheme" ]; then
+  echo "::error::Your action specifies a workspace name but does not define a scheme. You must provide both when using the workspace option."
+  exit 1
+fi
 
 # Change Directory
 if [ "$directory" != "." ]; then
@@ -28,13 +40,24 @@ if [ "$directory" != "." ]; then
 fi
 
 # Identify `Package.resolved` location
-RESOLVED_PATH=$(find . -type f -name "Package.resolved" | grep -v "*/*.xcodeproj/*")
-CHECKSUM=$(shasum "$RESOLVED_PATH")
+if [ ! -z "$workspaceName" ]; then
+  RESOLVED_PATH=$(find . -type f -name "Package.resolved" | grep -v "*/*.xcworkspace/*")
+else
+  RESOLVED_PATH=$(find . -type f -name "Package.resolved" | grep -v "*/*.xcodeproj/*")
+fi
 
+CHECKSUM=$(shasum "$RESOLVED_PATH")
 echo "Identified Package.resolved at '$RESOLVED_PATH'."
 
+# Define Xcodebuild Inputs
+if [ ! -z "$workspaceName" ]; then
+  xcodebuildInputs = "-workspace \"$workspaceName\" -scheme \"$scheme\""
+else
+  xcodebuildInputs = ""
+fi
+
 # Cleanup Caches
-DERIVED_DATA=$(xcodebuild -showBuildSettings -disableAutomaticPackageResolution -disablePackageRepositoryCache | grep -m 1 BUILD_DIR | grep -oE "\/.*" | sed 's|/Build/Products||')
+DERIVED_DATA=$(xcodebuild ${xcodebuildInputs} -showBuildSettings -disableAutomaticPackageResolution -disablePackageRepositoryCache | grep -m 1 BUILD_DIR | grep -oE "\/.*" | sed 's|/Build/Products||')
 rm -rf "$DERIVED_DATA"
 
 # If `forceResolution`, then delete the `Package.resolved`
@@ -49,7 +72,7 @@ rm -rf "$CACHE_PATH"
 
 # Resolve Dependencies
 echo "::group::xcodebuild resolve dependencies"
-xcodebuild -resolvePackageDependencies -disablePackageRepositoryCache
+xcodebuild ${xcodebuildInputs} -resolvePackageDependencies -disablePackageRepositoryCache
 echo "::endgroup"
 
 # Determine Changes

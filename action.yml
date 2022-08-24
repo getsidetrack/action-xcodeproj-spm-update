@@ -19,6 +19,12 @@ inputs:
   xcodePath:
     description: 'The path to Xcode which should be used to run xcodebuild commands - allows you to speicfy the Xcode version.'
     required: false
+  workspace:
+    description: 'If in use, provide the name of your xcworkspace file such as Example.xcworkspace'
+    required: false
+  scheme:
+    description: 'If specifying a workspace file, you must also provide a scheme as defined within your Xcode workspace.'
+    required: false
 outputs:
   dependenciesChanged:
     description: 'A bool (true or false) indicating whether changes were made to the dependencies.'
@@ -31,5 +37,5 @@ runs:
     - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
       shell: bash
     - id: script
-      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}" -d "${{ inputs.xcodePath }}"
+      run: entrypoint.sh -a "${{ inputs.directory }}" -b "${{ inputs.forceResolution }}" -c "${{ inputs.failWhenOutdated }}" -d "${{ inputs.xcodePath }}" -e "${{ inputs.workspace }}" -f "${{ inputs.scheme }}"
       shell: bash
