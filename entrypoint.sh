@@ -80,11 +80,11 @@ echo "::endgroup"
 NEWCHECKSUM=$(shasum "$RESOLVED_PATH")
 
 if [ "$CHECKSUM" != "$NEWCHECKSUM" ]; then
-  echo "::set-output name=dependenciesChanged::true"
+  echo "dependenciesChanged=true" >> $GITHUB_OUTPUT
 
   if [ "$failWhenOutdated" = true ] || [ "$failWhenOutdated" = 'true' ]; then
     exit 1
   fi
 else
-  echo "::set-output name=dependenciesChanged::false"
+  echo "dependenciesChanged=false" >> $GITHUB_OUTPUT
 fi
