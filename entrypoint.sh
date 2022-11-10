@@ -69,7 +69,7 @@ fi
 
 # Should be mostly redundant as we use the disable cache flag.
 SPM_CACHE="~/Library/Caches/org.swift.swiftpm/"
-rm -rf "$CACHE_PATH"
+rm -rf "$SPM_CACHE"
 
 # Resolve Dependencies
 echo "::group::xcodebuild resolve dependencies"
